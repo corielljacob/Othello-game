@@ -6,11 +6,10 @@
   \___/ \__|_| |_|\___|_|_|\___/   |
                                    |
 ------------------------------------
-by Jacob Coriell
+by Jacob Coriell. Created for CS-2003-Fundamentals of Algorithms in 2017. Revised in 2019. 
 
 Welcome to my Othello game. You may also know it as reversi. You can find rules to the game online in various 
-places such as https://www.ultraboardgames.com/othello/game-rules.php. Creation of this game was assigned as a project for 
-CS-2003: Fundamentals of Algorithms and Computer Applications.
+places such as https://www.ultraboardgames.com/othello/game-rules.php. 
 
 My game is meant to be played in the console. It was built on a Windows machine using Eclipse. To run the game, you can open the project in an IDE or 
 navigate to the src package in your console, compile with "javac othelloGamePackage\OthelloRunner.java" and run with "java othelloGamePackage.OthelloRunner" 
