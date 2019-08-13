@@ -1,0 +1,311 @@
+/**
+	 * Initiates the normal playing sequence. If single player, calls for a bot
+	 * move. If two player, calls for white move. Checks to see if user can move
+	 * first.
+	 * 
+	 * @param solo a boolean selected by the user, true if the user wants to play
+	 *            solo (with a bot), false if the user wants to play with another
+	 *            person
+	 */
+	protected void blackturn(boolean solo) {
+		if (!playerCanMove("B")) {
+			if (turnSkipped == 2)
+				gameOver("NM");
+			gameBoard.build();
+			printScores();
+			System.out.println("Black player can not move. Attempting to skip to white");
+			whiteturn();
+		}
+		turnSkipped = 0;
+		gameBoard.build();
+		printScores();
+
+		do {
+			do {
+
+				try {
+					System.out.println(
+							"Black Player: Assuming rows are the horizontal sections and columns are the vertical sections, enter what row you want to place a piece:");
+					therow = reader.nextInt();
+
+					System.out.println("Now enter the column you want to place a piece: ");
+					thecolumn = reader.nextInt();
+				} catch (Exception e) {
+					System.out.println("Please enter numbers only. Try again.");
+					reader.next();
+					blackturn(false);
+				}
+
+				if (therow < 1 || thecolumn < 1 || therow > 8 || thecolumn > 8) {
+					System.out.println("Please enter numbers greater than 1 and less than 9.");
+				}
+			} while (therow < 1 || thecolumn < 1 || therow > 8 || thecolumn > 8);
+
+			validmove = gameBoard.checkValid(therow - 1, thecolumn - 1, "B", false);
+
+			if (validmove == false)
+				System.out.println("Please enter piece locations that follow the rules of Othello.");
+
+		} while (validmove == false);
+
+		gameBoard.checkValid(therow - 1, thecolumn - 1, "B", true);
+		gameBoard.setPiece(therow - 1, thecolumn - 1, "B");
+		if (solo) {
+			compTurn();
+		} else
+			whiteturn();
+
+	}
+
+	/**
+	 * This method only gets called if in two player mode. Gets move from white
+	 * player and goes back to black player.
+	 */
+	protected void whiteturn() {
+
+		if (!playerCanMove("W")) {
+			if (turnSkipped == 2)
+				gameOver("NM");
+			gameBoard.build();
+			printScores();
+			System.out.println("White player can not move. Attempting to skip to black");
+			blackturn(false);
+		}
+
+		turnSkipped = 0;
+		gameBoard.build();
+		printScores();
+
+		do {
+			do {
+
+				try {
+					System.out.println(
+							"White Player: Assuming rows are the horizontal sections and columns are the vertical sections, enter what row you want to place a piece:");
+					therow = reader.nextInt();
+
+					System.out.println("Now enter the column you want to place a piece: ");
+					thecolumn = reader.nextInt();
+				} catch (Exception e) {
+					System.out.println("Please enter numbers only. Try again.");
+					reader.next();
+					whiteturn();
+				}
+
+				if (therow < 1 || thecolumn < 1 || therow > 8 || thecolumn > 8) {
+					System.out.println("Please enter numbers greater than 1 and less than 9.");
+				}
+			} while (therow < 1 || thecolumn < 1 || therow > 8 || thecolumn > 8);
+
+			validmove = gameBoard.checkValid(therow - 1, thecolumn - 1, "W", false);
+
+			if (validmove == false)
+				System.out.println("Please enter piece locations that follow the rules of Othello.");
+		} while (validmove == false);
+
+		gameBoard.checkValid(therow - 1, thecolumn - 1, "W", true);
+		gameBoard.setPiece(therow - 1, thecolumn - 1, "W");
+
+		blackturn(false);
+	}
+	
+	/**
+	 * Black player bot for simulation mode. Carries out a random move from
+	 * available moves.
+	 */
+	protected void autoPlayBlack() {
+		int moves = 0;
+
+		gameBoard.setNumMoves(0);
+		if (playerCanMove("B")) {
+			moves = gameBoard.getNumMoves();
+		}
+		if (moves == 0)
+			return;
+		int randMove = ThreadLocalRandom.current().nextInt(1, moves + 1);
+		gameBoard.calculateMoves("B");
+		gameBoard.randomMove(randMove, "B");
+
+	}
+
+	/**
+	 * White player bot for simulation mode. Carries out a random move from
+	 * available moves.
+	 */
+	protected void autoPlayWhite() {
+		int moves = 0;
+
+		gameBoard.setNumMoves(0);
+		if (playerCanMove("W")) {
+			moves = gameBoard.getNumMoves();
+		}
+
+		if (moves == 0)
+			return;
+
+		int randMove = ThreadLocalRandom.current().nextInt(1, moves + 1);
+		gameBoard.calculateMoves("W");
+		gameBoard.randomMove(randMove, "W");
+
+	}
+	
+	/**
+	 * This method is called if the game is in one player mode -- will randomly
+	 * select a move out of a list of moves and then returns to black users turn
+	 */
+	protected void compTurn() {
+		int moves = 0;
+
+		if (!playerCanMove("W")) {
+			if (turnSkipped == 2)
+				gameOver("NM");
+			gameBoard.build();
+			printScores();
+			System.out.println("White player can not move. Attempting to skip to black");
+
+			blackturn(true);
+		}
+
+		gameBoard.setNumMoves(0);
+		if (playerCanMove("W")) {
+			moves = gameBoard.getNumMoves();
+		}
+
+		int randMove = ThreadLocalRandom.current().nextInt(1, moves + 1);
+
+		gameBoard.calculateMoves("W");
+		gameBoard.randomMove(randMove, "W");
+
+		blackturn(true);
+	}
+	
+	blackPlayer.setScore(gameBoard.getNumPieces("B"));
+		whitePlayer.setScore(gameBoard.getNumPieces("W"));
+		//System.out.println("Black player has " + blackPlayer.getScore());
+		//System.out.println("White player has " + whitePlayer.getScore());
+		
+		
+		/**
+	 * Displays the scores for both players
+	 */
+	private void printScores() {
+		blackPlayer.setScore(gameBoard.getNumPieces("B"));
+		whitePlayer.setScore(gameBoard.getNumPieces("W"));
+		System.out.println("Black Player Score: " + blackPlayer.getScore());
+		System.out.println("White Player Score: " + whitePlayer.getScore());
+	}
+	
+		/*
+			 * validmove = gameBoard.checkValid(row - 1, col - 1, this.color, false);
+			 * 
+			 * if (validmove == false) System.out.
+			 * println("Please enter piece locations that follow the rules of Othello.");
+			 * 
+			 * } while (validmove == false);
+			 */
+			 
+			 
+/**
+	 * 
+	 * @return the amount of moves the player has
+	 */
+	//protected int getNumMoves(String s) {
+		//return numMoves;
+	//}
+	
+	/**
+	 * 
+	 * @param n is the number of moves to set to -- usually zero to reset the number
+	 *            of moves the player has
+	 */
+	protected void setNumMoves(int n, int b) {
+		numMoves = n;
+	}
+	
+	/**
+	 * 
+	 * @return true if neither player can move
+	 */
+	protected boolean noMoves() {
+		if (!(canMove("B")) && !(canMove("W")))
+			return true;
+		else
+			return false;
+	}
+	
+	/**
+	 * 
+	 * @param s color of player to find amount of pieces for
+	 * @return an int that is the number of pieces on the board for that player
+	 */
+	protected int getPieces(String s) {
+		if (s.equalsIgnoreCase("W"))
+			return numwhitepieces;
+		else
+			return numblackpieces;
+	}
+	
+	/*
+	 * This method will add every valid move to a linked list
+	 * @param s is the current player's color
+	 *
+	protected void calculateMoves(String s) {
+		moves.clear();
+		for (int x = 0; x < pieceChart.length; x++) {
+			for (int y = 0; y < pieceChart[0].length; y++) {
+				if (checkValid(x, y, s, false)) {
+					moves.add(x);
+					moves.add(y);
+				}
+			}
+		}
+	}*/
+	
+	/**
+	 * This method will display each move gathered by calculateMoves()
+	 */
+	protected void displayPossibleMoves() {
+		ListIterator<Integer> listIterator = moves.listIterator();
+		while (listIterator.hasNext()) {
+			System.out.println(" " + listIterator.next() + " " + listIterator.next());
+		}
+	}
+	
+	/**
+	 * This method will user a list iterator to randomly choose a move from the list
+	 * of available moves
+	 * @param n is the randomly generated int -- this number decides which move is
+	 *            used in the list
+	 * @param s is the current player's color
+	 */
+	protected void randomMove(int n, String s) {
+		int moveCount = 1;
+		int x, y;
+		ListIterator<Integer> listIterator = moves.listIterator();
+		while (listIterator.hasNext()) {
+			x = listIterator.next();
+			y = listIterator.next();
+			if (moveCount == n) {
+				checkValid(x, y, s, true);
+				setPiece(x, y, s);
+				return;
+			} else {
+				moveCount++;
+			}
+		}
+	}
+	
+	/**
+	 * This method determines whether or not the current player can make a move. If
+	 * the player can not, the player is marked as skipped
+	 * 
+	 * @param gameBoard is the current board being played on
+	 */
+	private void playerMoveTest(Board gameBoard, int x) {
+		if (this.canMove(this.color, gameBoard)) {
+			canMove = true;
+		} else {
+			
+			canMove = false;
+		}
+	}
