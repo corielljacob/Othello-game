@@ -22,12 +22,13 @@ public class Piece {
 	}
 
 	/**
-	 * change color of piece
-	 * 
-	 * @param clr desired color to change a piece to
+	 * Flip color of this piece to color opposite of current
 	 */
-	protected void setPieceColor(String clr) {
-		color = clr;
+	protected void flipColor() {
+		if (this.getPieceColor().equals("W"))
+			this.setPieceColor("B");
+		else
+			this.setPieceColor("W");
 	}
 
 	/**
@@ -40,12 +41,11 @@ public class Piece {
 	}
 
 	/**
-	 * Flip color of this piece to color opposite of current
+	 * change color of piece
+	 * 
+	 * @param clr desired color to change a piece to
 	 */
-	protected void flipColor() {
-		if (this.getPieceColor().equals("W"))
-			this.setPieceColor("B");
-		else
-			this.setPieceColor("W");
+	protected void setPieceColor(String clr) {
+		color = clr;
 	}
 }

@@ -47,3 +47,5 @@ picks a move to make at random.This continues until the game is over.
 
 3) Two-Player Mode
 This mode allows two players to play by prompting each player where they'd like to place pieces until the game finishes.  
+
+Note: in both one-player and two-player mode, the game will display an "O" for potential moves for whichever player is currently choosing a move.

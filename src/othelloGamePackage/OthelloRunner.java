@@ -16,8 +16,8 @@ public class OthelloRunner {
 	private Scanner reader = new Scanner(System.in);
 	private Player blackPlayer = new Player("B");
 	private Player whitePlayer = new Player("W");
-	private Player cpuW = new Player("W");
-	private Player cpuB = new Player("B");
+	private Player cpuW = new Player("W",true);
+	private Player cpuB = new Player("B",true);
 	private String userchoice;
 
 	public static void main(String args[]) throws IOException {
@@ -48,13 +48,13 @@ public class OthelloRunner {
 	
 	private void twoPlayer() throws IOException {
 		while((!blackPlayer.wasSkipped() && !whitePlayer.wasSkipped()) && !gameBoard.checkIfFull()) {
-		gameBoard.build();
+		gameBoard.build("B");
 		blackPlayer.takeTurn(gameBoard);
 		if(gameBoard.checkIfFull()) {
 			gameOver2P();
 			return;
 		}
-		gameBoard.build();
+		gameBoard.build("W");
 		whitePlayer.takeTurn(gameBoard);
 		}
 		gameOver2P();
@@ -66,16 +66,16 @@ public class OthelloRunner {
 	 */
 	private void singlePlayer() throws IOException {
 		while(!(blackPlayer.wasSkipped() && cpuW.wasSkipped()) && !gameBoard.checkIfFull()) {
-			gameBoard.build();
+			gameBoard.build("B");
 			blackPlayer.takeTurn(gameBoard);
 			if(gameBoard.checkIfFull()) {
 				gameOver1P();
 				return;
 			}
 			if(!blackPlayer.wasSkipped()) {
-				gameBoard.build();
+				gameBoard.build("null");
 			}
-			System.out.println("Computer taking turn.");
+			System.out.println("\nComputer turn:");
 			cpuW.takeRandomTurn(gameBoard);
 			}
 			gameOver1P();
@@ -95,22 +95,18 @@ public class OthelloRunner {
 		while (tests > 0) {
 			gameBoard.reset();
 			while (!gameBoard.checkIfFull() && !(cpuB.wasSkipped() && cpuW.wasSkipped())) {
-				reader.next();
 				cpuB.takeRandomTurn(gameBoard);
-				gameBoard.build();
-				reader.next();
 				cpuW.takeRandomTurn(gameBoard);
-				gameBoard.build();
 			}
-			gameBoard.build();
 			spread = gameBoard.getNumPieces("B") - gameBoard.getNumPieces("W");
-
 			if (map.containsKey(spread)) {
 				map.put(spread, map.get(spread) + 1);
 			} else {
 				map.put(spread, 1);
 			}
 			tests--;
+			cpuB.unskip();
+			cpuW.unskip();
 		}
 		System.out.println("Simulations Completed! Printing results:");
 
@@ -135,7 +131,7 @@ public class OthelloRunner {
 			System.out.print("Neither player can move. ");
 		}
 		System.out.println("Game Over. Final board:");
-		gameBoard.build();
+		gameBoard.build("null");
 		if (blackScore > whiteScore) {
 			System.out.println("Black player wins!");
 		} else if (blackScore < whiteScore)
@@ -166,7 +162,7 @@ public class OthelloRunner {
 			System.out.print("\nNeither player can move. ");
 		}
 		System.out.println("Game Over. Final board:");
-		gameBoard.build();
+		gameBoard.build("null");
 		if (blackScore > whiteScore) {
 			System.out.println("Black player wins!");
 		} else if (blackScore < whiteScore)

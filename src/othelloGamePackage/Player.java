@@ -5,11 +5,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
-
-
 /**
- * Class describing a player. A player has several attributes: a color (black
- * or white), a score based on how many pieces they have on the board, a flag
+ * Class describing a player. A player has several attributes: a color (black or
+ * white), a score based on how many pieces they have on the board, a flag
  * denoting if their last turn was skipped, a boolean denoting whether or not
  * they can currently move, and a list of possible moves. This class contains a
  * few getters/setters to preserve encapsulation.
@@ -19,13 +17,18 @@ public class Player {
 	private int score = 0;
 	private String color;
 	private boolean skipped = false;
-	private boolean canMove;
 	List<moveLocation> moves = new ArrayList<moveLocation>();
 	private final int rows = 8;
 	private final int columns = 8;
+	private boolean robot = false;
 
 	public Player(String clr) {
 		color = clr;
+	}
+
+	public Player(String clr, boolean bot) {
+		color = clr;
+		robot = bot;
 	}
 
 	/**
@@ -42,7 +45,7 @@ public class Player {
 	protected int getScore() {
 		return score;
 	}
-	
+
 	/**
 	 * Getter method to determine if this player was skipped last turn.
 	 * @return a boolean that is true if player was skip last turn, false if not
@@ -52,10 +55,9 @@ public class Player {
 	}
 
 	protected boolean playerCanMove(Board gameBoard) {
-		//playerMoveTest(gameBoard);
 		return (this.canMove(this.color, gameBoard));
 	}
-	
+
 	/**
 	 * This method will check to see if a player simply can move or has no available
 	 * moves
@@ -63,10 +65,11 @@ public class Player {
 	 * @return true if the player can make a move this turn
 	 */
 	protected boolean canMove(String s, Board gameBoard) {
-		canMove = false;
+		boolean canMove = false;
 		for (int x = 0; x < rows; x++) {
 			for (int y = 0; y < columns; y++) {
-				if (gameBoard.checkValid(x, y, s, false)) {
+				// if (gameBoard.checkValid(x, y, s, false)) {
+				if (gameBoard.checkMove(x, y, s)) {
 					canMove = true;
 				}
 			}
@@ -80,8 +83,7 @@ public class Player {
 			String rowString, colString;
 			int row, col;
 			do {
-
-				System.out.println(this.color + " Player: Assuming rows are the horizontal sections and columns are the vertical sections, enter what row you want to place a piece: ");
+				System.out.println(this.color + " Player: Assuming rows are the horizontal sections and columns are the vertical sections, \nenter what row you want to place a piece: ");
 				rowString = reader.next();
 				System.out.println("Now enter the column you want to place a piece: ");
 				colString = reader.next();
@@ -90,26 +92,24 @@ public class Player {
 
 			row = Integer.parseInt(rowString);
 			col = Integer.parseInt(colString);
-			gameBoard.checkValid(row - 1, col - 1, this.color, true);
-			gameBoard.setPiece(row - 1, col - 1, this.color);
+			gameBoard.makeMove(row - 1, col - 1, this.color);
 			unskip();
 		} else {
 			System.out.println("Skipping turn for " + this.color);
 			skip();
 		}
-
 	}
 
 	protected void takeRandomTurn(Board gameBoard) {
-		determineMoves(gameBoard);
+		this.determineMoves(gameBoard);
 		if (moves.isEmpty()) {
 			this.skip();
-			System.out.println("No moves available. Skipping turn.");
+			if (!robot)
+				System.out.println("No moves available. Skipping turn.");
 		} else {
 			Random rand = new Random();
 			moveLocation move = moves.get(rand.nextInt(moves.size()));
-			gameBoard.checkValid(move.x, move.y, this.color, true);
-			gameBoard.setPiece(move.x, move.y, this.color);
+			gameBoard.makeMove(move.x, move.y, this.color);
 			unskip();
 		}
 	}
@@ -118,7 +118,7 @@ public class Player {
 		moves.clear();
 		for (int x = 0; x < rows; x++) {
 			for (int y = 0; y < columns; y++) {
-				if (gameBoard.checkValid(x, y, this.color, false)) {
+				if (gameBoard.checkMove(x, y, this.color)) {
 					moves.add(new moveLocation(x, y));
 				}
 			}
@@ -129,7 +129,7 @@ public class Player {
 		this.skipped = true;
 	}
 
-	private void unskip() {
+	protected void unskip() {
 		this.skipped = false;
 	}
 
@@ -144,7 +144,7 @@ public class Player {
 		}
 
 		if (intIsDecimal(row) && intIsDecimal(col)) {
-			if (gameBoard.checkValid(row - 1, col - 1, this.color, false)) {
+			if (gameBoard.checkMove(row - 1, col - 1, this.color)) {
 				return true;
 			} else {
 				System.out.println("Please enter a valid location.");
