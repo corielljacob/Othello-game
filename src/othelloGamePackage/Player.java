@@ -14,10 +14,9 @@ import java.util.Scanner;
  * @author Jacob Coriell
  */
 public class Player {
-	private int score = 0;
 	private String color;
 	private boolean skipped = false;
-	List<moveLocation> moves = new ArrayList<moveLocation>();
+	List<Pair> moves = new ArrayList<Pair>();
 	private final int rows = 8;
 	private final int columns = 8;
 	private boolean robot = false;
@@ -29,33 +28,6 @@ public class Player {
 	public Player(String clr, boolean bot) {
 		color = clr;
 		robot = bot;
-	}
-
-	/**
-	 * Set score of current player
-	 * @param n score of current player
-	 */
-	protected void setScore(int n) {
-		score = n;
-	}
-
-	/**
-	 * @return score of current player
-	 */
-	protected int getScore() {
-		return score;
-	}
-
-	/**
-	 * Getter method to determine if this player was skipped last turn.
-	 * @return a boolean that is true if player was skip last turn, false if not
-	 */
-	protected boolean wasSkipped() {
-		return this.skipped;
-	}
-
-	protected boolean playerCanMove(Board gameBoard) {
-		return (this.canMove(this.color, gameBoard));
 	}
 
 	/**
@@ -76,7 +48,38 @@ public class Player {
 		}
 		return canMove;
 	}
-
+	
+	/**
+	 * Determines if a player can move
+	 * @param gameBoard the current board being used
+	 * @return true if player can move
+	 */
+	protected boolean playerCanMove(Board gameBoard) {
+		return (this.canMove(this.color, gameBoard));
+	}
+	
+	/**
+	 * Determines all possible moves for player and executes a random one
+	 * @param gameBoard current board being used
+	 */
+	protected void takeRandomTurn(Board gameBoard) {
+		this.determineMoves(gameBoard);
+		if (moves.isEmpty()) {
+			this.skip();
+			if (!robot)
+				System.out.println("No moves available. Skipping turn.");
+		} else {
+			Random rand = new Random();
+			Pair move = moves.get(rand.nextInt(moves.size()));
+			gameBoard.makeMove(move.x, move.y, this.color);
+			unskip();
+		}
+	}
+	
+	/**
+	 * Prompts user to take a turn by asking for location and checking for valid input
+	 * @param gameBoard current board being used
+	 */
 	protected void takeTurn(Board gameBoard) {
 		if (this.canMove(this.color, gameBoard)) {
 			Scanner reader = new Scanner(System.in);
@@ -87,9 +90,9 @@ public class Player {
 				rowString = reader.next();
 				System.out.println("Now enter the column you want to place a piece: ");
 				colString = reader.next();
-
+	
 			} while (!validNums(rowString, colString, gameBoard));
-
+	
 			row = Integer.parseInt(rowString);
 			col = Integer.parseInt(colString);
 			gameBoard.makeMove(row - 1, col - 1, this.color);
@@ -100,39 +103,68 @@ public class Player {
 		}
 	}
 
-	protected void takeRandomTurn(Board gameBoard) {
-		this.determineMoves(gameBoard);
-		if (moves.isEmpty()) {
-			this.skip();
-			if (!robot)
-				System.out.println("No moves available. Skipping turn.");
-		} else {
-			Random rand = new Random();
-			moveLocation move = moves.get(rand.nextInt(moves.size()));
-			gameBoard.makeMove(move.x, move.y, this.color);
-			unskip();
-		}
+	/**
+	 * Getter method to determine if this player was skipped last turn.
+	 * @return a boolean that is true if player was skip last turn, false if not
+	 */
+	protected boolean wasSkipped() {
+		return this.skipped;
 	}
-
+	
+	/**
+	 * Find all possible moves for a player
+	 * @param gameBoard current board being used
+	 */
 	private void determineMoves(Board gameBoard) {
 		moves.clear();
 		for (int x = 0; x < rows; x++) {
 			for (int y = 0; y < columns; y++) {
 				if (gameBoard.checkMove(x, y, this.color)) {
-					moves.add(new moveLocation(x, y));
+					moves.add(new Pair(x, y));
 				}
 			}
 		}
 	}
-
+	
+	/**
+	 * Helper method to validate user input
+	 * @param num a potential row or column entered
+	 * @return true if the input is valid
+	 */
+	private boolean intIsDecimal(int num) {
+		return (num == 1 || num == 2 || num == 3 || num == 4 || num == 5 || num == 6 || num == 7 || num == 8 || num == 9);
+	}
+	
+	/**
+	 * Denote player as skipped
+	 */
 	private void skip() {
 		this.skipped = true;
 	}
-
+	
+	/**
+	 * Denote player as unskipped
+	 */
 	protected void unskip() {
 		this.skipped = false;
 	}
+	
+	/**
+	 * Helper method used to validate user input
+	 * @param s string entered by the user when picking a row/rolumn
+	 * @return true if the string is 1-9 (valid input)
+	 */
+	private boolean strIsDecimal(String s) {
+		return (s.charAt(0) == ('1') || s.charAt(0) == ('2') || s.charAt(0) == ('3') || s.charAt(0) == ('4') || s.charAt(0) == ('5') || s.charAt(0) == ('6') || s.charAt(0) == ('7') || s.charAt(0) == ('8') || s.charAt(0) == ('9'));
+	}
 
+	/**
+	 * Complete input validation algorithm. Calls two helper methods and checks to make sure location picked is valid also
+	 * @param x row user wants to place piece in
+	 * @param y column user wants to place piece in
+	 * @param gameBoard board being played on 
+	 * @return true if input is valid
+	 */
 	private boolean validNums(String x, String y, Board gameBoard) {
 		int row, col;
 		if (strIsDecimal(x) && strIsDecimal(y)) {
@@ -153,19 +185,16 @@ public class Player {
 		return false;
 	}
 
-	private boolean intIsDecimal(int num) {
-		return (num == 1 || num == 2 || num == 3 || num == 4 || num == 5 || num == 6 || num == 7 || num == 8 || num == 9);
-	}
-
-	private boolean strIsDecimal(String s) {
-		return (s.charAt(0) == ('1') || s.charAt(0) == ('2') || s.charAt(0) == ('3') || s.charAt(0) == ('4') || s.charAt(0) == ('5') || s.charAt(0) == ('6') || s.charAt(0) == ('7') || s.charAt(0) == ('8') || s.charAt(0) == ('9'));
-	}
-
-	public class moveLocation {
+	/**
+	 * Helper class used to simulate a pair/tuple
+	 * @author Jacob Coriell
+	 *
+	 */
+	private class Pair {
 		public final int x;
 		public final int y;
 
-		public moveLocation(int xcoord, int ycoord) {
+		public Pair(int xcoord, int ycoord) {
 			this.x = xcoord;
 			this.y = ycoord;
 		}

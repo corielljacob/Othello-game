@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
- * @author Jacob Coriell
- * This is the driver class that should be run from the terminal. The player can chose to jump into simulation mode,
- * single player mode, or two player mode. 
+ * @author Jacob Coriell This is the driver class that should be run from the
+ *         terminal. The player can chose to jump into simulation mode, single
+ *         player mode, or two player mode.
  */
 public class OthelloRunner {
 	int checkForNoMoves = 0;
@@ -16,15 +16,19 @@ public class OthelloRunner {
 	private Scanner reader = new Scanner(System.in);
 	private Player blackPlayer = new Player("B");
 	private Player whitePlayer = new Player("W");
-	private Player cpuW = new Player("W",true);
-	private Player cpuB = new Player("B",true);
+	private Player cpuW = new Player("W", true);
+	private Player cpuB = new Player("B", true);
 	private String userchoice;
 
 	public static void main(String args[]) throws IOException {
-		OthelloRunner game = new OthelloRunner();	
+		OthelloRunner game = new OthelloRunner();
 		game.crossroad();
 	}
-	
+
+	/**
+	 * Allows user to pick which mode to play the game in.
+	 * @throws IOException
+	 */
 	protected void crossroad() throws IOException {
 		reader = new Scanner(System.in);
 		String userInput;
@@ -45,40 +49,46 @@ public class OthelloRunner {
 		else
 			this.twoPlayer();
 	}
-	
+
+	/**
+	 * Two player version of the game. Black player goes first and then turns are
+	 * taken until game over.
+	 * @throws IOException
+	 */
 	private void twoPlayer() throws IOException {
-		while((!blackPlayer.wasSkipped() && !whitePlayer.wasSkipped()) && !gameBoard.checkIfFull()) {
-		gameBoard.build("B");
-		blackPlayer.takeTurn(gameBoard);
-		if(gameBoard.checkIfFull()) {
-			gameOver2P();
-			return;
-		}
-		gameBoard.build("W");
-		whitePlayer.takeTurn(gameBoard);
+		while ((!blackPlayer.wasSkipped() && !whitePlayer.wasSkipped()) && !gameBoard.checkIfFull()) {
+			gameBoard.build("B");
+			blackPlayer.takeTurn(gameBoard);
+			if (gameBoard.checkIfFull()) {
+				gameOver2P();
+				return;
+			}
+			gameBoard.build("W");
+			whitePlayer.takeTurn(gameBoard);
 		}
 		gameOver2P();
 	}
-	
+
 	/**
-	 * Allows one player to play against a computer opponent. Human player is black while computer is white. 
-	 * @throws IOException 
+	 * Allows one player to play against a computer opponent. Human player is black
+	 * while computer is white.
+	 * @throws IOException
 	 */
 	private void singlePlayer() throws IOException {
-		while(!(blackPlayer.wasSkipped() && cpuW.wasSkipped()) && !gameBoard.checkIfFull()) {
+		while (!(blackPlayer.wasSkipped() && cpuW.wasSkipped()) && !gameBoard.checkIfFull()) {
 			gameBoard.build("B");
 			blackPlayer.takeTurn(gameBoard);
-			if(gameBoard.checkIfFull()) {
+			if (gameBoard.checkIfFull()) {
 				gameOver1P();
 				return;
 			}
-			if(!blackPlayer.wasSkipped()) {
+			if (!blackPlayer.wasSkipped()) {
 				gameBoard.build("null");
 			}
 			System.out.println("\nComputer turn:");
 			cpuW.takeRandomTurn(gameBoard);
-			}
-			gameOver1P();
+		}
+		gameOver1P();
 	}
 
 	/**
@@ -118,11 +128,10 @@ public class OthelloRunner {
 		}
 	}
 
-	
 	/**
-	 * This method will calculate the final scores and display the winner for a two player game. It will
-	 * also allow the users to play again.
-	 * @throws IOException 
+	 * This method will calculate the final scores and display the winner for a two
+	 * player game. It will also allow the users to play again.
+	 * @throws IOException
 	 */
 	private void gameOver2P() throws IOException {
 		int blackScore = gameBoard.getNumPieces("B");
@@ -153,11 +162,16 @@ public class OthelloRunner {
 				System.out.println("Sorry I don't understand your choice. Try again.");
 		} while (userchoice != "y" && userchoice != "Y" && userchoice != "N" && userchoice != "n");
 	}
-	
+
+	/**
+	 * This method will calculate the final scores and display the winner for a one
+	 * player game. It will also allow the user to play again.
+	 * @throws IOException
+	 */
 	private void gameOver1P() throws IOException {
 		int blackScore = gameBoard.getNumPieces("B");
 		int whiteScore = gameBoard.getNumPieces("W");
-		
+
 		if ((blackPlayer.wasSkipped() && cpuW.wasSkipped()) && !gameBoard.checkIfFull()) {
 			System.out.print("\nNeither player can move. ");
 		}

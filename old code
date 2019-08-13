@@ -392,3 +392,18 @@
 			y += dy;
 		}
 	}
+	
+		/**
+	 * Set score of current player
+	 * @param n score of current player
+	 */
+	private void setScore(int n) {
+		score = n;
+	
+	
+	/**
+	 * @return score of current player
+	 */
+	protected int getScore() {
+		return score;
+	}

@@ -14,7 +14,6 @@ public class Piece {
 
 	/**
 	 * modified constructor -- create new piece with color based on user
-	 * 
 	 * @param clr color based on the user. Player 1 is black. Player 2 is white.
 	 */
 	protected Piece(String clr) {
@@ -33,7 +32,6 @@ public class Piece {
 
 	/**
 	 * Gets color of this piece
-	 * 
 	 * @return string detailing color of this piece
 	 */
 	protected String getPieceColor() {
@@ -42,7 +40,6 @@ public class Piece {
 
 	/**
 	 * change color of piece
-	 * 
 	 * @param clr desired color to change a piece to
 	 */
 	protected void setPieceColor(String clr) {

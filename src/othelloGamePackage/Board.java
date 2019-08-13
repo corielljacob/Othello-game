@@ -1,10 +1,7 @@
 package othelloGamePackage;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-
-import othelloGamePackage.Player.moveLocation;
 
 /**
  * Class representing a board used for the game. Can check if the board is full,
@@ -21,9 +18,8 @@ public class Board {
 	private boolean isFull;
 	private int[] xoffsets = { 1, -1, 0, 0, 1, 1, -1, -1 };
 	private int[] yoffsets = { 0, 0, -1, 1, 1, -1, 1, -1 };
-	private List<pair> moves = new ArrayList<pair>();
-	//private LinkedList<Integer> moves = new LinkedList<Integer>();
-	private List<pair> validDirections = new ArrayList<pair>();
+	private List<Pair> moves = new ArrayList<Pair>();
+	private List<Pair> validDirections = new ArrayList<Pair>();
 
 	/**
 	 * This constructor constructs the 2D array of piece objects, pieceChart. This
@@ -35,7 +31,8 @@ public class Board {
 	}
 
 	/**
-	 * This method loops through the 2D array and outputs where each piece lays
+	 * This method prints the state of the board by looping thru the array containing the piece data. 
+	 * The board will display possible move locations for human players. 
 	 */
 	protected void build(String s) {
 		boolean locPlaced = false;
@@ -85,17 +82,27 @@ public class Board {
 		System.out.println("  ---------------------------------");
 	}
 
+	/**
+	 * Protected access method to full checking method
+	 */
 	protected boolean checkIfFull() {
 		checkFull();
 		return isFull;
 	}
 
+	/**
+	 * Protected access method to checking if a move is valid
+	 * @param x is the row of the selected location
+	 * @param y is the column of the selected location
+	 * @param s is the color of the piece that would be placed
+	 * @return true if this move can be made, false if not
+	 */
 	protected boolean checkMove(int x, int y, String s) {
 		return (moveCheck(x, y, s));
 	}
 
 	/**
-	 * 
+	 * Protected access method for getting the number of pieces for a specified player
 	 * @param s is what player you want to know's piece count
 	 * @return the number of pieces for that player
 	 */
@@ -108,7 +115,13 @@ public class Board {
 		} else
 			return 0;
 	}
-
+	
+	/**
+	 * Protected access method to making a move on the board. Sets a piece on the board and flips any pieces as needed.
+	 * @param x is the row that the move should be made in
+	 * @param y is the column that the move should be made in
+	 * @param s is the color of the player trying to make this move
+	 */
 	protected void makeMove(int x, int y, String s) {
 		if (moveCheck(x, y, s)) {
 			setPiece(x, y, s);
@@ -162,7 +175,7 @@ public class Board {
 	}
 
 	/**
-	 * 
+	 * Check if board is full with chips
 	 * @return a boolean that is true if there are no empty spots on the board
 	 */
 	private void checkFull() {
@@ -179,17 +192,27 @@ public class Board {
 			isFull = false;
 	}
 	
+	/**
+	 * Determine all possible moves for a player
+	 * @param s is the color of the player to check all moves for
+	 */
 	private void determineMoves(String s) {
 		moves.clear();
 		for (int x = 0; x < rows; x++) {
 			for (int y = 0; y < columns; y++) {
 				if (this.checkMove(x, y, s)) {
-					moves.add(new pair(x, y));
+					moves.add(new Pair(x, y));
 				}
 			}
 		}
 	}
-
+	
+	/**
+	 * Flips any appropriate pieces along the directions that have flips.
+	 * @param x row that the original piece was placed in
+	 * @param y column that the original piece was placed in
+	 * @param s color of player who placed the original piece
+	 */
 	private void flipPieces(int x, int y, String s) {
 		for (int i = 0; i < validDirections.size(); i++) {
 			int xoffset = (validDirections.get(i).x);
@@ -203,7 +226,14 @@ public class Board {
 			}
 		}
 	}
-
+	
+	/**
+	 * Check if a move can be made. If a move is possible, the offsets used are stored for an easier flipping algorithm
+	 * @param x row to place a piece in
+	 * @param y column to place a piece in
+	 * @param s color of the player attemping to make a move
+	 * @return true if the move can be made at this location
+	 */
 	private boolean moveCheck(int x, int y, String s) {
 		boolean adjacentCheck = false;
 		boolean valid = false;
@@ -219,17 +249,15 @@ public class Board {
 			nexty = y + yoffset;
 			adjacentCheck = false;
 			while (nextx >= 0 && nextx < pieceChart.length && nexty >= 0 && nexty < pieceChart[0].length) {
-				// if this position is null
 				if ((pieceChart[nextx][nexty].getPieceColor().equals("null"))) {
 					break;
 				}
-				// if this piece's color is opposite to the piece being placed
 				else if (!(pieceChart[nextx][nexty].getPieceColor().equals(s))) {
 					adjacentCheck = true;
 					nextx += xoffset;
 					nexty += yoffset;
 				} else if (adjacentCheck) {
-					validDirections.add(new pair(xoffset, yoffset));
+					validDirections.add(new Pair(xoffset, yoffset));
 					valid = true;
 					break;
 				} else {
@@ -239,12 +267,17 @@ public class Board {
 		}
 		return valid;
 	}
-
-	public class pair {
+	
+	/**
+	 * Helper class that simulates a pair/tuple data structure
+	 * @author Corieljt
+	 *
+	 */
+	private class Pair {
 		public final int x;
 		public final int y;
 
-		public pair(int xcoord, int ycoord) {
+		public Pair(int xcoord, int ycoord) {
 			this.x = xcoord;
 			this.y = ycoord;
 		}
