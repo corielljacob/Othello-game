@@ -3,6 +3,11 @@
   <groupId>com.Coriell.OthelloGame</groupId>
   <artifactId>OthelloGame</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <properties>
+  <sonar.projectKey>corielljacob_Othello-game</sonar.projectKey>
+  <sonar.organization>corielljacob</sonar.organization>
+  <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+</properties>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
